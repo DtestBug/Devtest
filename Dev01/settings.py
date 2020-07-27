@@ -113,13 +113,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'#改为上海的时间则数据库没有时差
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False#TIME_ZONE的参数为默认值时为True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -127,4 +127,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-REST_FRAMEWORK={'NON_FIELD)ERRORS_KEY':'errors',}
+REST_FRAMEWORK={'NON_FIELD)ERRORS_KEY':'errors'}

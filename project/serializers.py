@@ -2,8 +2,14 @@ from rest_framework import serializers
 from rest_framework import validators
 from .models import Project_Mo
 
-# serializers.Serializer序列化
 
+#前端待校验的值自动传送给value
+# def is_name_contain_x(value):
+#     if 'x' in value:
+#         raise serializers.ValidationError('项目名称中不能包含x')
+#     return value
+
+# serializers.Serializer序列化
 class ProjectSerializer(serializers.Serializer):
     """
     可以定义序列化器类，来实现序列化和反序列化操作
@@ -32,36 +38,43 @@ class ProjectSerializer(serializers.Serializer):
     # tester = serializers.CharField(max_length=50,label='项目名称',help_text='测试人员')
     # desc = serializers.CharField(max_length=200,label='项目名称',help_text='简要描述')
 
-    id = serializers.CharField(max_length=20,label='id',help_text='id')
-    name = serializers.CharField(max_length=200,label='name',help_text='项目名称',validators=[validators.UniqueValidator(queryset=Project_Mo.objects.all(),message='项目')])
-    leader = serializers.CharField(max_length=50,label='leader',help_text='项目负责人')
+    id = serializers.CharField(max_length=20,label='id',help_text='id',required=False)
+    name = serializers.CharField(max_length=200,label='name',help_text='项目名称',
+                                 validators=[validators.UniqueValidator(queryset=Project_Mo.objects.all(),message='项目已存在')],allow_blank=False)
+    leader = serializers.CharField(max_length=50,label='leader',help_text='项目负责人',allow_blank=False)
     tester = serializers.CharField(max_length=50,label='tester',help_text='测试人员')
-    programmer = serializers.CharField(max_length=50,label='programmer',help_text='开发人员')
-    desc = serializers.CharField(help_text='项目简介',label='desc',max_length=50)
-    create_time = serializers.DateTimeField(help_text='创建时间',label='create_time')
-    update = serializers.DateTimeField(help_text='创建时间',label='upd')
+    programmer = serializers.CharField(max_length=50,label='programmer',help_text='开发人员',allow_blank=False)
+    desc = serializers.CharField(help_text='项目简介',label='desc',max_length=50,allow_blank=False,)
+    create_time = serializers.DateTimeField(help_text='创建时间',label='create_time',required=False)
+    update = serializers.DateTimeField(help_text='创建时间',label='upd',required=False)
 
 
-def is_name_contain_x(value):
-    if 'x' in value:
-        raise serializers.ValidationError('项目名称中不能包含x')
+    #在序列化器类中对单字段进行校验
+    # 必须要以validate_作为前缀
+    # 校验方法名称为：validate_字段名（例如：validate_name)字段名不能错误
+    # c.一定要返回校验之后的值
+    def validate_name(self, value):
+        if '非常' in value:
+            raise serializers.ValidationError("项目名称中不能包含'非常'")
+        return value
 
-def validate_name(self, value):
-    if '非常' in value:
-        raise serializers.ValidationError('项目名称中不能包含"非常"')
-    return value
+    #在序列化器类中对多字段进行联合校验统一用validate
+    #一定要把校验后的值返回前端
+    def validate(self, attrs):
+        if len(attrs['name']) < 8 or '测试' not in attrs['tester']:
+            raise serializers.ValidationError('项目名长度不为8或者测试人员名称中不包含"测试"')
+        return attrs
 
-def validate(self, attrs):
-    if len(attrs['name']) !=8 or '测试'  not in attrs['tester']:
-        raise serializers.ValidationError('项目名长度不为8或者测试人员名称中不包含"测试"')
-    return attrs
+    def create(self, validated_data):
+        obj=Project_Mo.objects.create(**validated_data)
+        return obj
 
-def create(self, validated_data):
-    obj=Project_Mo.objects.create(**validated_data)
-    return obj
-
-def update(self, instance, validated_data):
-    instance.name = validated_data.get('name') or instance.name
-    instance.leader = validated_data.get('leader') or instance.leader
-    instance.save()
-    return instance
+    def update(self, instance, validated_data):
+        instance.id = validated_data.get('id') or instance.id
+        instance.name = validated_data.get('name') or instance.name
+        instance.leader = validated_data.get('leader') or instance.leader
+        instance.tester = validated_data.get('tester') or instance.tester
+        instance.programmer = validated_data.get('programmer') or instance.programmer
+        instance.desc = validated_data.get('desc') or instance.desc
+        instance.save()
+        return instance

@@ -19,9 +19,9 @@ class Project_Mo(models.Model):
     # 15.default为某一个字段指定默认值，往往会跟blank一起使用
 
     # 16.DateTimeField可以添加auto_now_add选项，django会自动添加创建记录时的时间
-    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间',)
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
     # 17.DateTimeField可以添加auto_now选项，django会自动添加更新记录时的时间
-    update = models.DateTimeField(auto_now=True, verbose_name='创建时间', help_text='创建时间')
+    update_time = models.DateTimeField(auto_now=True, verbose_name='更新时间', help_text='更新时间')
 
     # 18.执行迁移脚本之后，生成的数据表名默认为子应用名_模型类名小写
     class Meta:
