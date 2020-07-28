@@ -78,3 +78,20 @@ class ProjectSerializer(serializers.Serializer):
         instance.desc = validated_data.get('desc') or instance.desc
         instance.save()
         return instance
+
+
+#使用模型序列化器类：简化序列化器类中字段的创建
+# a:需要继承ModelSerializer
+
+class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
+
+    # 以下类名与变量为固定名字
+    class Meta:
+        # a:需要再Meta内部类这两个指定model类属性；需要按照哪一个模型来创建
+        # b:fields类属性来指定，模型类中哪些字段需要输入或者输出
+        # c:默认id主键，会添加read_only=True
+        # d:create_time和update_time，会添加read_only=True
+
+        model = Project_Mo
+        fields = '__all__'#生成所有的序列化器字段
+

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse,HttpResponse
 from .models import Project_Mo
-from .serializers import ProjectSerializer
+from .serializers import ProjectSerializer,ProjectModelSerializer
 import json
 
 # POST与PUT上传数据时候需要注意项：
@@ -28,13 +28,13 @@ class Project(View):
         except Exception as e:
             res['msg'] = '数据不存在'
             return JsonResponse(res,json_dumps_params={"ensure_ascii": False},)
-        one = ProjectSerializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
+        one = ProjectModelSerializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
         return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
 
     def post(self,request):
         da = {}
         Cr_data = json.loads(request.body)#将数据转换为字典格式,获取请求之后发送的json数据
-        res = ProjectSerializer(data=Cr_data)
+        res = ProjectModelSerializer(data=Cr_data)
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
@@ -52,7 +52,7 @@ class Project(View):
             da['msg'] = "没有所需要更新的数据，无法更新"
             return JsonResponse(da)
         Cr_data = json.loads(request.body)#将数据转换为字典格式,获取请求之后发送的json数据
-        res = ProjectSerializer(instance=obj, data=Cr_data)#instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
+        res = ProjectModelSerializer(instance=obj, data=Cr_data)#instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
