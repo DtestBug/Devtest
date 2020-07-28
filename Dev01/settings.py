@@ -127,4 +127,6 @@ USE_TZ = False#TIME_ZONE的参数为默认值时为True
 
 STATIC_URL = '/static/'
 
-REST_FRAMEWORK={'NON_FIELD)ERRORS_KEY':'errors'}
+REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEY':'errors',
+}

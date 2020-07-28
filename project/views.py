@@ -27,7 +27,7 @@ class Project(View):
             pro_obj = Project_Mo.objects.get(id=pk)
         except Exception as e:
             res['msg'] = '数据不存在'
-            return JsonResponse(res)
+            return JsonResponse(res,json_dumps_params={"ensure_ascii": False},)
         one = ProjectSerializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
         return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
 
@@ -42,9 +42,7 @@ class Project(View):
             da.update(res.errors)
             return JsonResponse(da,status=400,safe=False)
         res.save()#使用序列化器对象.save()可以自动调用序列化器类中的create方法
-        da['msg'] = '上传成功'
-        da.update(res.data)
-        return JsonResponse(da, status=201)
+        return JsonResponse(res.data, status=201)
 
     def put(self,request,pk=None):
         da={}
