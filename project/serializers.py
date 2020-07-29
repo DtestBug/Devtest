@@ -85,9 +85,6 @@ class ProjectSerializer(serializers.Serializer):
 
 class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
 
-    # name = serializers.CharField(max_length=10,label='项目名称',help_text='项目名称',
-    #                              validators=[validators.UniqueValidator(queryset=Project_Mo.objects.all())],allow_blank=False)
-
     # 一、validators.UniqueValidator内
     # 1.queryset=Project_Mo.objects.all()全部查询集
     # 2.message='项目名重复'自定义返回的报错
@@ -127,14 +124,14 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
         # ===========================================================================================
         # fields和exclude只能用一个，否则会报AssertionError: You must call `.is_valid()` before accessing `.errors`.的错误
         # 生成所有的序列化器字段，__all__包含models数据库内所有的字段
-        # fields = '__all__'
+        fields = '__all__'
 
         # 生成指定的序列化器字段，以下字段名必须为models内的字段名
         # fields = ('id', 'name', 'leader', 'tester', 'programmer')
 
         # models所有字段中需要排除的一项添加到exclude内,
         # 不展示到前端,但是数据可以保存到数据库
-        # exclude = ('create_time', 'update_time',)
+        exclude = ('create_time', 'update_time',)
         # ============================================================================================
         # 只输出不输入.
         # 上传的时候忽略read_only_fields内传的字段post和put上传的数据无法传递到数据库和前端页面,
@@ -142,22 +139,23 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
         # 但是传参的时候必须传,否则会报错
         # read_only_fields = ('id', 'desc', )
 
-"""
-
         # 可以在extra_kwargs中定制字段或者新增字段，字段校验或重置使用extra_kwargs,校验方法写错会有波浪线
         extra_kwargs = {
             'name':{
-                    'max_length': '10',
-                    'min_length': '4',
-                    'label': '项目名称',
-                    'help_text': '项目名称',
-                    'validators': [validators.UniqueValidator(queryset=Project_Mo.objects.all(),message='项目已存在')]},
+                    'max_length': 10,
+                    'min_length': 4
+                    # 'label': '项目名称',
+                    # 'help_text': '项目名称',
+                    # 'validators': [validators.UniqueValidator(queryset=Project_Mo.objects.all(), message='项目已存在')]
+            },
                     
-            'programmer': {
-                    'label': ' 研发人员',
-                    'write_only': 'False',
-                    'max_length': '10',
-                    'min_length': '4',},
+            # 'programmer': {
+            #         'label': ' 研发人员',
+            #         'write_only': False,
+            #         'max_length': 10,
+            #         'min_length': 4
+            # },
                         }
 
-"""
+# AssertionError: You must call `.is_valid()` before accessing `.errors`.
+# 1.13课堂派

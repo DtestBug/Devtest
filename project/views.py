@@ -59,7 +59,7 @@ class Project(View):
             res.is_valid(raise_exception=True)
         except Exception as e:
             ret2.update(res.errors)
-            return JsonResponse(ret2,status=400,safe=False)
+            return JsonResponse(ret2,status=400)
         res.save()#使用序列化器对象.save()可以自动调用序列化器类中的create方法
         return JsonResponse(res.data, status=201)
 
