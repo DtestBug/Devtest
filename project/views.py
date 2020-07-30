@@ -103,3 +103,10 @@ class Projects(View):
         one = ProjectSerializer(instance=lists,many=True)
         return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
 
+
+
+
+
+
+
+
