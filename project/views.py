@@ -100,7 +100,7 @@ class Projects(View):
         # safe=False：为了允许序列化非dict对象，请将safe参数设置为False
         # json_dumps_params={"ensure_ascii": False}
         lists = Project_Mo.objects.all()
-        one = ProjectSerializer(instance=lists,many=True)
+        one = ProjectModelSerializer(instance=lists,many=True)
         return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
 
 

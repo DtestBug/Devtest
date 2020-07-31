@@ -22,3 +22,33 @@ class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
     class Meta:
         model = Interface_Mo
         fields = '__all__'
+
+    def create(self, validated_data):
+        Interface_Mo(name='', projects_id=5)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -86,10 +86,14 @@ class ProjectSerializer(serializers.Serializer):
 class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
 
     email = serializers.EmailField(write_only=True)
-    print(11111)
+
+
+    #interface的projects_id为几，这个id就是project内的id下的全部数据
+    #如果模型类modles.py中外键字段定义了related_name参数，那么会使用这个名称作为字段名，就不需要加_set了
     interface_mo_set = InterfaceModelSerializer(label='所拥有的接口', many=True)
-    print(interface_mo_set)
-    print(222222)
+
+    # interface的projects_id为几，这个id就是project内的id下的name字段
+    # interface_mo_set = serializers.StringRelatedField(many=True)
 
     # 一、validators.UniqueValidator内
     # 1.queryset=Project_Mo.objects.all()全部查询集
@@ -131,6 +135,7 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
         # fields和exclude只能用一个，否则会报AssertionError: You must call `.is_valid()` before accessing `.errors`.的错误
         # 生成所有的序列化器字段，__all__包含models数据库内所有的字段
         fields = '__all__'
+        # fields = ("id","name","leader","tester","interface_mo_set","programmer","desc","email")
 
         # 生成指定的序列化器字段，以下字段名必须为models内的字段名
         # fields = ('id', 'name', 'leader', 'tester', 'programmer')
