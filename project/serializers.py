@@ -170,5 +170,5 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
 
     def create(self, validated_data):
         email = validated_data.pop('email')
-        # return super().create(**validated_data)
-        return Project_Mo.objects.create(**validated_data)
+        return super().create(validated_data)
+        # return Project_Mo.objects.create(**validated_data)

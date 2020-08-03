@@ -26,6 +26,10 @@ SECRET_KEY = '74$can%xrcahvv1q)k#)=7v-@xrs4xjt+lzv0wr^(7f71(eajz'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# 二、Django设置DEBUG为False时，'django.contrib.staticfiles'会关闭，即Django不会自动搜索静态文件。
+# 静态文件不能加载导致的问题有两个：
+# （1）页面排版不正常，即css文件不能正常加载；
+# （2）通过url不能访问静态文件，如图片等。
 
 
 # Application definition
