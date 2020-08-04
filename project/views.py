@@ -84,6 +84,7 @@ class Projects(View):
         # json_dumps_params={"ensure_ascii": False}
         lists = Project_Mo.objects.all()
         one = ProjectModelSerializer(instance=lists,many=True)
+        # print(type(JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False).getvalue()))
         return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
 
 
