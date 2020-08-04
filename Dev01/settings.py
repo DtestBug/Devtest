@@ -135,4 +135,12 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':'errors',
+
+    # 可以修改默认的渲染类（处理返回的数据形式）
+    # 列表中的元素有优先级，第一个元素的优先级最高
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.backends.DjangoFilterBackend'],
 }

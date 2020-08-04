@@ -4,6 +4,11 @@ from django.http import JsonResponse,HttpResponse,Http404
 from .models import Project_Mo
 from .serializers import ProjectSerializer,ProjectModelSerializer
 import json
+# =========================
+from rest_framework.views import APIView
+
+from rest_framework.response import Response
+
 
 # POST与PUT上传数据时候需要注意项：
 # 1.一定要先执行is_valid()方法之后才能访问,is_valid()目的是检测数据是否有效
@@ -19,7 +24,15 @@ ret2 = {'msg': '操作成功',
         'code': 10002,
 }
 
-class Project(View):
+# 1.需要继承APIView
+# a.对Django中的View进行了拓展
+# b.具备认证/授权/限流/
+# 2.需要使用drf中的Response返回需要的东西
+# a.对Django中的HttpResponse进行了拓展
+# b.实现了根据请求头张Accept参数来动态返回
+# c.默认情况下，如果不传Accept参数或者创建applications/json，那么会返回json格式
+# d.如果Accept参数text/html，那么会返回可浏览的api页面（html）
+class Project(APIView):
 
     def get_object(self,pk):
         try:
@@ -70,7 +83,7 @@ class Project(View):
         return JsonResponse(ret2)
 
 
-class Projects(View):
+class Projects(APIView):
 
     # 查询数据库所有数据
     def get(self,request):
@@ -84,8 +97,9 @@ class Projects(View):
         # json_dumps_params={"ensure_ascii": False}
         lists = Project_Mo.objects.all()
         one = ProjectModelSerializer(instance=lists,many=True)
-        # print(type(JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False).getvalue()))
-        return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
+        # return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
+        # 1.status指定响应状态码
+        return Response(one.data,status=200)
 
 
 

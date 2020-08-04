@@ -84,6 +84,9 @@ class ProjectSerializer(serializers.Serializer):
 # a:需要继承ModelSerializer
 
 class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
+    import locale
+    locale.setlocale(locale.LC_CTYPE, 'chinese') # 设置本地为简体中文，可以识别时间中的年月日
+    datetime_fmt = '%Y年%m月%d日 %H:%M:%S'
 
     email = serializers.EmailField(write_only=True)
 
@@ -93,7 +96,7 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
     interface_mo_set = InterfaceModelSerializer(label='所拥有的接口', many=True, required=False)
 
     # 时间格式化显示到前端
-    create_time = serializers.DateTimeField(label='创建时间', help_text='创建时间', format='%Y-%m-%d %H:%M:%S',required=False)
+    create_time = serializers.DateTimeField(label='创建时间', help_text='创建时间', format=datetime_fmt,required=False)
     update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间', format='%Y-%m-%d %H:%M:%S',required=False)
 
     # interface的projects_id为几，这个id就是project内的id下的name字段
