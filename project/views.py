@@ -6,7 +6,7 @@ from .serializers import ProjectSerializer,ProjectModelSerializer
 import json
 # =========================
 from rest_framework.views import APIView
-
+from rest_framework import status
 from rest_framework.response import Response
 
 
@@ -39,7 +39,6 @@ class Project(APIView):
             pro_obj = Project_Mo.objects.get(id=pk)
         except Exception as e:
             raise Http404('哦，我的上帝！您访问的页面飞到九霄云外咯。')
-            # return JsonResponse(ret1, json_dumps_params={"ensure_ascii": False}, )
         return pro_obj
 
 
@@ -49,39 +48,46 @@ class Project(APIView):
     def get(self,request, pk):
         pro_obj = self.get_object(pk)
         one = ProjectModelSerializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
-        return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
-
+        # return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
+        return Response(one.data, status=status.HTTP_200_OK)
 
     def post(self,request):
+        # request.query_params
 
-        Cr_data = json.loads(request.body)#将数据转换为字典格式,获取请求之后发送的json数据
-        res = ProjectModelSerializer(data=Cr_data)
+        # 继承ApiView之后，request为Request
+        # a.对Django中的HttpRequest进行了拓展
+        # b.统一使用Request对象.data属性去获取json格式的参数，form表单参数，files
+        # c.Django支持的参数获取方式，DRF都支持
+            # .GET>>>查询字符串参数>>>.query_params
+            # .POST>>>x-www-form-encoded
+            # .body>>>获取请求体参数
+        # d.Request对象.data属性为将请求数据转化为python中的字典（嵌套字典的列表）
+        res = ProjectModelSerializer(data=request.data)
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
             ret1.update(res.errors)
-            return JsonResponse(ret1,status=400)
-        res.save()#使用序列化器对象.save()可以自动调用序列化器类中的create方法
-        return JsonResponse(res.data, status=201)
+            return Response(ret1, status=status.HTTP_400_BAD_REQUEST)
+        res.save() # 使用序列化器对象.save()可以自动调用序列化器类中的create方法
+        return Response(res.data, status=status.HTTP_201_CREATED)
 
     def put(self,request, pk):
         pro_obj = self.get_object(pk)
-        Cr_data = json.loads(request.body)#将数据转换为字典格式,获取请求之后发送的json数据
-        res = ProjectModelSerializer(instance=pro_obj, data=Cr_data)#instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
+        res = ProjectModelSerializer(instance=pro_obj, data=request.data) # instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
             ret1.update(res.errors)
-            return JsonResponse(ret1,status=400)
-        res.save()#save方法自动调用update
-        return JsonResponse(res.data, status=201)
+            return Response(ret1, status=status.HTTP_400_BAD_REQUEST)
+        res.save() # save方法自动调用update
+        return Response(res.data, status=status.HTTP_201_CREATED)
 
     def delete(self,request, pk):
         pro_obj = self.get_object(pk)
         pro_obj.delete()
         ret2['data'] = f'id:{pk}'
-        return JsonResponse(ret2)
-
+        # return JsonResponse(ret2)
+        return Response(ret2, status=status.HTTP_204_NO_CONTENT)
 
 class Projects(APIView):
 
@@ -96,10 +102,14 @@ class Projects(APIView):
         # safe=False：为了允许序列化非dict对象，请将safe参数设置为False
         # json_dumps_params={"ensure_ascii": False}
         lists = Project_Mo.objects.all()
+
+        # 示例：http://127.0.0.1:8000/index/projects/?name=今天吃什么3
+        name = request.query_params.get('name')
+        if name is not None:
+            lists = lists.filter(name=name)
         one = ProjectModelSerializer(instance=lists,many=True)
-        # return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
         # 1.status指定响应状态码
-        return Response(one.data,status=200)
+        return Response(one.data,status=status.HTTP_200_OK)
 
 
 
