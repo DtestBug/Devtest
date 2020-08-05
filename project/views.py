@@ -6,6 +6,7 @@ from .serializers import ProjectSerializer,ProjectModelSerializer
 import json
 # =========================
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -32,7 +33,15 @@ ret2 = {'msg': '操作成功',
 # b.实现了根据请求头张Accept参数来动态返回
 # c.默认情况下，如果不传Accept参数或者创建applications/json，那么会返回json格式
 # d.如果Accept参数text/html，那么会返回可浏览的api页面（html）
-class Project(APIView):
+
+# 如果要实现过滤、查询、分页等功能，需要继承GenericAPIView
+# a.GenericAPIView为APIview的子类，拓展了过滤、查询、分页
+
+class Project(GenericAPIView):
+    # b.往往要指定queryset，当前接口中需要使用到的查询集（查询集对象）
+    # c. 往往要指定serializer_class,当前接口中需要使用到的序列化器类
+    queryset = Project_Mo.objects.all() # 查询集
+    serializer_class = ProjectModelSerializer # 序列化器类
 
     def get_object(self,pk):
         try:
@@ -47,8 +56,7 @@ class Project(APIView):
 
     def get(self,request, pk):
         pro_obj = self.get_object(pk)
-        one = ProjectModelSerializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
-        # return JsonResponse(one.data,json_dumps_params={"ensure_ascii": False},safe=False)
+        one = self.get_serializer(instance=pro_obj)#查询单个数据的时候不能加many=True否则报错:TypeError: 'Project_Mo' object is not iterable
         return Response(one.data, status=status.HTTP_200_OK)
 
     def post(self,request):
@@ -62,7 +70,7 @@ class Project(APIView):
             # .POST>>>x-www-form-encoded
             # .body>>>获取请求体参数
         # d.Request对象.data属性为将请求数据转化为python中的字典（嵌套字典的列表）
-        res = ProjectModelSerializer(data=request.data)
+        res = self.get_serializer(data=request.data)
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
@@ -73,7 +81,7 @@ class Project(APIView):
 
     def put(self,request, pk):
         pro_obj = self.get_object(pk)
-        res = ProjectModelSerializer(instance=pro_obj, data=request.data) # instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
+        res = self.get_serializer(instance=pro_obj, data=request.data) # instance传递的参数为查询出来的参数，data传递的参数为需要更新的参数,必须用sava来保存
         try:
             res.is_valid(raise_exception=True)
         except Exception as e:
@@ -89,7 +97,11 @@ class Project(APIView):
         # return JsonResponse(ret2)
         return Response(ret2, status=status.HTTP_204_NO_CONTENT)
 
-class Projects(APIView):
+class Projects(GenericAPIView):
+    # b.往往要指定queryset，当前接口中需要使用到的查询集（查询集对象）
+    # c. 往往要指定serializer_class,当前接口中需要使用到的序列化器类
+    queryset = Project_Mo.objects.all() # 查询集
+    serializer_class = ProjectModelSerializer # 序列化器类
 
     # 查询数据库所有数据
     def get(self,request):
@@ -101,15 +113,17 @@ class Projects(APIView):
         # .data返回的是字典，否则返回一个嵌套字典的列表
         # safe=False：为了允许序列化非dict对象，请将safe参数设置为False
         # json_dumps_params={"ensure_ascii": False}
-        lists = Project_Mo.objects.all()
+        # lists = Project_Mo.objects.all()
 
-        # 示例：http://127.0.0.1:8000/index/projects/?name=今天吃什么3
-        name = request.query_params.get('name')
-        if name is not None:
-            lists = lists.filter(name=name)
-        one = ProjectModelSerializer(instance=lists,many=True)
+        # 尽量使用get_queryset()获取查询集对象，不直接使用self.queryset
+        # 还有get_serializer获取序列化
+        lists = self.get_queryset()
+        one = self.get_serializer(instance=lists, many=True)
         # 1.status指定响应状态码
         return Response(one.data,status=status.HTTP_200_OK)
+
+        # 需要安装django-filter
+        # pip install django - filter
 
 
 
