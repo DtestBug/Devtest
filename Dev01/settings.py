@@ -148,4 +148,8 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ],  # 指定所有视图公用的过滤引擎，如果视图中指定了过滤引擎就使用视图当中的过滤引擎
 
+    # 可以试用默认的分页引擎类PageNumberPagination
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # 分页功能
+    # 必须指定每一页的数据数量
+    'PAGE_SIZE': 1,
 }
