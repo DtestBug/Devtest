@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from rest_framework import mixins
+from rest_framework import generics
+from rest_framework import viewsets
 
 from utils.pagination import MyPagination
 
@@ -154,7 +156,41 @@ class Project(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Destroy
         # return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 
+# GenericAPIView和APIView只支持对get,post,put,delete,patch等请求方法
+# 如果要支持action,需要继承ViewSet
+# 当前ViewSet，无法支持.get_object()，.filter_queryset(),.paginate_queryset()
+# class ProjectsViewSet(viewsets.ViewSet)
+# GenericViewSet才支持对列表数据进行过滤，排序，分页操作
+# class ProjectsViewSet(mixins.ListModelMixin,  # 列表查询
+#                       mixins.RetrieveModelMixin,  # 单条查询
+#                       mixins.CreateModelMixin,  # 创建数据
+#                       mixins.UpdateModelMixin,  # 更新数据
+#                       mixins.DestroyModelMixin,  # 删除数据
+#                       viewsets.GenericViewSet):  #支持对列表数据进行过滤，排序，分页操作
 
+# viewsets.ModelViewSet支持以上所有功能（查，建，改，删）
+class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过滤，排序，分页操作
+    queryset = Project_Mo.objects.all()  # 查询集
+    serializer_class = ProjectModelSerializer  # 序列化器类
+    # filter_backends = [DjangoFilterBackend, OrderingFilter]  # 过滤引擎,排序引擎
+    # filterset_fields = ['name', 'leader', 'id']  #过滤字段
+    # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
+    # pagination_class = MyPagination  # 在视图中指定分页
+
+    # def list(self, request, *args, **kwargs):
+    #     pass
+
+    # def retrieve(self, request, *args, **kwargs):
+    #     pass
+
+    # def create(self, request, *args, **kwargs):
+    #     pass
+
+    # def update(self, request, *args, **kwargs):
+    #     pass
+
+    # def destroy(self, request, *args, **kwargs):
+    #     pass
 
 
 
