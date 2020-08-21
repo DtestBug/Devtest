@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework import validators
 from .models import Project_Mo
+from interface.models import Interface_Mo
 from interface.serializers import InterfaceModelSerializer
 
 #前端待校验的值自动传送给value
@@ -88,8 +89,8 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
     locale.setlocale(locale.LC_CTYPE, 'chinese') # 设置本地为简体中文，可以识别时间中的年月日
     datetime_fmt = '%Y年%m月%d日 %H:%M:%S'
 
-    email = serializers.EmailField(write_only=True)
-
+    # email = serializers.EmailField(write_only=True)
+    # interfaces = InterfaceModelSerializer(many=True, read_only=True)
     # interface的projects_id为几，这个id就是project内的id下的全部数据
     # 如果模型类modles.py中外键字段定义了related_name参数，那么会使用这个名称作为字段名，就不需要加_set了
     # 一定为子表类名的小写加set
@@ -179,3 +180,21 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
         email = validated_data.pop('email')
         return super().create(validated_data)
         # return Project_Mo.objects.create(**validated_data)
+
+
+class ProjectsNamesModelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project_Mo
+        fields = ('id', 'name')
+
+class InterfacesNamesModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interface_Mo
+        fields = ('id', 'name')
+
+class InterFacesByProjectIdModelSerializer(serializers.ModelSerializer):
+    interfaces = InterfacesNamesModelSerializer(many=True, read_only=True)
+    class Meta:
+        model = Project_Mo
+        fields = ('interfaces',)

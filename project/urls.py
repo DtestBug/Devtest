@@ -15,5 +15,13 @@ urlpatterns = [
     path('projects/', views.ProjectsViewSet.as_view({
         'get': 'list',
         'post': 'create'
+    })),
+
+    path('projects/names/', views.ProjectsViewSet.as_view({
+        'get': 'names'
+    })),
+
+    path('projects/<int:pk>/interfaces', views.ProjectsViewSet.as_view({
+        'get': 'retrieve'
     }))
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse,HttpResponse,Http404
 from .models import Project_Mo
-from .serializers import ProjectSerializer,ProjectModelSerializer
+from .serializers import ProjectSerializer,ProjectModelSerializer,ProjectsNamesModelSerializer,InterFacesByProjectIdModelSerializer
 import json
 # =========================
 from rest_framework.views import APIView
@@ -14,7 +14,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework import viewsets
-
+from rest_framework.decorators import action
 from utils.pagination import MyPagination
 
 # POST与PUT上传数据时候需要注意项：
@@ -177,20 +177,35 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
     # pagination_class = MyPagination  # 在视图中指定分页
 
-    # def list(self, request, *args, **kwargs):
-    #     pass
+    # 可以试用action装饰器去自定义动作方法
+    # methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']
+    # detail参数为必传参数，指定是否为详情数据（如果需要传递主键ID，那么detail=True,否则为False）
+    # url_path指定url部分，默认为action名称(当前为names)
+    # url_name指定url的名称，默认为action名称(当前names)
+    @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据
+    def names(self, request):
+        serializer_obj = ProjectsNamesModelSerializer(instance=self.get_queryset(), many=True)
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     pass
+        # 进行过滤和分页功能
+        # serializer_obj = MyPagination
+        return Response(serializer_obj.data)
 
-    # def create(self, request, *args, **kwargs):
-    #     pass
+    @action(detail=True)
+    def interfaces(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer_obj = self.get_serializer(instance=instance)
+        return Response(serializer_obj)
 
-    # def update(self, request, *args, **kwargs):
-    #     pass
+    def get_serializer_class(self):
+        if self.action == 'names':
+            return ProjectsNamesModelSerializer
 
-    # def destroy(self, request, *args, **kwargs):
-    #     pass
+        elif self.action == 'interfaces':
+            return InterFacesByProjectIdModelSerializer
+
+        else:
+            return self.serializer_class
+
 
 
 
