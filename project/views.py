@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse,HttpResponse,Http404
 from .models import Project_Mo
-from .serializers import ProjectSerializer,ProjectModelSerializer,ProjectsNamesModelSerializer,InterFacesByProjectIdModelSerializer
+from .serializers import ProjectSerializer,ProjectModelSerializer,ProjectsNamesModelSerializer,InterFacesByProjectIdModelSerializer,InterfacesNamesModelSerializer
 import json
 # =========================
 from rest_framework.views import APIView
@@ -170,21 +170,43 @@ class Project(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Destroy
 
 # viewsets.ModelViewSet支持以上所有功能（查，建，改，删）
 class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过滤，排序，分页操作
+
+    # 以下内容均为接口文档内的操作描述
+    """
+    项目视图
+    list:
+        获取项目的列表信息
+    create:
+        创建新的项目
+    names:
+        查看项目名字
+    read:
+        读取项目详情
+    update:
+        更新数据
+    partial_update:
+        局部更新
+    delete:
+        删除数据
+    interfaces:
+        interfaces项目数据
+    """
+
     queryset = Project_Mo.objects.all()  # 查询集
     serializer_class = ProjectModelSerializer  # 序列化器类
     # filter_backends = [DjangoFilterBackend, OrderingFilter]  # 过滤引擎,排序引擎
     # filterset_fields = ['name', 'leader', 'id']  #过滤字段
     # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
-    # pagination_class = MyPagination  # 在视图中指定分页
+    pagination_class = MyPagination  # 在视图中指定分页
 
     # 可以试用action装饰器去自定义动作方法
     # methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']
     # detail参数为必传参数，指定是否为详情数据（如果需要传递主键ID，那么detail=True,否则为False）
-    # url_path指定url部分，默认为action名称(当前为names)
+    # 添加url_path指定url路径，不添加则默认为action名称(当前为names)
     # url_name指定url的名称，默认为action名称(当前names)
-    @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据
+    @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据# url_path='nnn'
     def names(self, request):
-        serializer_obj = ProjectsNamesModelSerializer(instance=self.get_queryset(), many=True)
+        serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
 
         # 进行过滤和分页功能
         # serializer_obj = MyPagination
@@ -194,7 +216,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     def interfaces(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer_obj = self.get_serializer(instance=instance)
-        return Response(serializer_obj)
+        return Response(serializer_obj.data)
 
     def get_serializer_class(self):
         if self.action == 'names':

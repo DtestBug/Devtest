@@ -94,11 +94,11 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
     # interface的projects_id为几，这个id就是project内的id下的全部数据
     # 如果模型类modles.py中外键字段定义了related_name参数，那么会使用这个名称作为字段名，就不需要加_set了
     # 一定为子表类名的小写加set
-    interface_mo_set = InterfaceModelSerializer(label='所拥有的接口', many=True, required=False)
+    interface_mo_set = InterfaceModelSerializer(label='所拥有的接口', many=True, required=False, read_only=True)
 
     # 时间格式化显示到前端
-    create_time = serializers.DateTimeField(label='创建时间', help_text='创建时间', format=datetime_fmt,required=False)
-    update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间', format='%Y-%m-%d %H:%M:%S',required=False)
+    create_time = serializers.DateTimeField(label='创建时间', help_text='创建时间', format=datetime_fmt,required=False,read_only=True)
+    update_time = serializers.DateTimeField(label='更新时间', help_text='更新时间', format='%Y-%m-%d %H:%M:%S',required=False,read_only=True)
 
     # interface的projects_id为几，这个id就是project内的id下的name字段
     # interface_mo_set = serializers.StringRelatedField(many=True)
@@ -161,7 +161,7 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
         # 可以在extra_kwargs中定制字段或者新增字段，字段校验或重置使用extra_kwargs,校验方法写错会有波浪线
         extra_kwargs = {
             'name':{
-                    'max_length': 10,
+                    'max_length': 12,
                     'min_length': 4,
                     'label': '项目名称',
                     'help_text': '项目名称',
@@ -171,13 +171,13 @@ class ProjectModelSerializer(serializers.ModelSerializer):#类名自定义
             'programmer': {
                     'label': ' 研发人员',
                     'write_only': False,
-                    'max_length': 10,
-                    'min_length': 4
+                    'max_length': 4,
+                    'min_length': 2
             },
                         }
 
     def create(self, validated_data):
-        email = validated_data.pop('email')
+        # email = validated_data.pop('email')
         return super().create(validated_data)
         # return Project_Mo.objects.create(**validated_data)
 

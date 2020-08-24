@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'drf_yasg',
 
 
     'project',
@@ -151,5 +152,7 @@ REST_FRAMEWORK = {
     # 可以试用默认的分页引擎类PageNumberPagination
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # 分页功能
     # 必须指定每一页的数据数量
-    'PAGE_SIZE': 1,
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',  # 解决打开接口文档地址时候报错get_link
 }
