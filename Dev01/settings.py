@@ -25,7 +25,10 @@ SECRET_KEY = '74$can%xrcahvv1q)k#)=7v-@xrs4xjt+lzv0wr^(7f71(eajz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 可以使用哪些ip或者域名来访问系统
+# 默认为空，可以使用127.0.0.1或者localhost
+ALLOWED_HOSTS = ['*']
+
 # 二、Django设置DEBUG为False时，'django.contrib.staticfiles'会关闭，即Django不会自动搜索静态文件。
 # 静态文件不能加载导致的问题有两个：
 # （1）页面排版不正常，即css文件不能正常加载；
@@ -156,3 +159,46 @@ REST_FRAMEWORK = {
 
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',  # 解决打开接口文档地址时候报错get_link
 }
+
+# 可以在全局配置settings中的logging，来配制日志信息
+LOGGING = {
+    'version': 1,  # 版本号
+    'disable_existing_loggers': False,  # 指定是否禁用已经存在的日志器
+    'formatters': {  # 日志的显示格式
+        'simple': {  # simple为简化版本的日志
+            'format': '%(asctime)s - [%(levelname)s] - [msg]%(message)s'
+        },
+        'verbose': {  # verbose为详细格式的日志
+            'format': '%(asctime)s - [%(levelname)s] - %(name)s - [msg]%(message)s - [%(filename)s:%(lineno)d ]'
+        },
+    },
+    'filters': {  # 对日志进行过滤，默认就ok
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {  # 指定日志输出渠道
+        'console': {  # 指定输出到控制台
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {  # 日志保存到日志文件
+            'level': 'DEBUG',  # 最低等级为info
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs/test.txt"),  # 日志文件位置，BASE_DIR>>>当前项目工程
+            'maxBytes': 100 * 1024 * 1024,  # 最大日志轮转100M
+            'backupCount': 10,
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {  # 定义日志器
+        'test': {
+            'handlers': ['console', 'file'],
+            'propagate': True,
+            'level': 'DEBUG',  # 日志器接受的最低日志级别
+        },
+    }
+}
+

@@ -188,13 +188,16 @@ class ProjectsNamesModelSerializer(serializers.ModelSerializer):
         model = Project_Mo
         fields = ('id', 'name')
 
+
 class InterfacesNamesModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interface_Mo
         fields = ('id', 'name')
 
+
 class InterFacesByProjectIdModelSerializer(serializers.ModelSerializer):
     interfaces = InterfacesNamesModelSerializer(many=True, read_only=True)
+
     class Meta:
-        model = Project_Mo
+        model = Interface_Mo
         fields = ('interfaces',)

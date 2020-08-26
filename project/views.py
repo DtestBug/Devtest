@@ -16,6 +16,8 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from utils.pagination import MyPagination
+import logging
+logger = logging.getLogger("test")  # 日志器为settings.py中定义的日志器名
 
 # POST与PUT上传数据时候需要注意项：
 # 1.一定要先执行is_valid()方法之后才能访问,is_valid()目的是检测数据是否有效
@@ -193,7 +195,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     """
 
     queryset = Project_Mo.objects.all()  # 查询集
-    serializer_class = ProjectModelSerializer  # 序列化器类
+    serializer_class = ProjectModelSerializer  # 序列化器类，ProjectsNamesModelSerializer、ProjectModelSerializer
     # filter_backends = [DjangoFilterBackend, OrderingFilter]  # 过滤引擎,排序引擎
     # filterset_fields = ['name', 'leader', 'id']  #过滤字段
     # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
@@ -207,10 +209,11 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据# url_path='nnn'
     def names(self, request):
         serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
-
+        data = serializer_obj.data
+        logger.debug(data)
         # 进行过滤和分页功能
         # serializer_obj = MyPagination
-        return Response(serializer_obj.data)
+        return Response(data)
 
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
