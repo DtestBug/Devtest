@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Project_Mo(models.Model):
     # 只要某一个字段中primary_key = True,那么Django就不会自动创建id字段，会使用自定义的
 
