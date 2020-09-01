@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+sys.path.append(os.path.join(BASE_DIR, 'apps'))  # 阔以导入使用，将某路径添加到系统搜索路径中
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -27,7 +29,7 @@ DEBUG = True
 
 # 可以使用哪些ip或者域名来访问系统
 # 默认为空，可以使用127.0.0.1或者localhost
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 # 二、Django设置DEBUG为False时，'django.contrib.staticfiles'会关闭，即Django不会自动搜索静态文件。
 # 静态文件不能加载导致的问题有两个：
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
 
     'project',
     'interface',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -91,17 +94,18 @@ WSGI_APPLICATION = 'Dev01.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dev01',#指定数据库的名称
-        'HOST': '127.0.0.1',#域名和IP
-        'PORT': '3306',#端口号，默认3306
-        'USER':'root',
-        'PASSWORD': '123456'#密码
+        'NAME': 'dev02',  # 指定数据库的名称
+        'HOST': '127.0.0.1',  # 域名和IP
+        'PORT': '3306',  # 端口号，默认3306
+        'USER': 'root',
+        'PASSWORD': '123456'  # 密码
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -122,15 +126,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-us'  # zh-Hans中文/en-us英文
 
-TIME_ZONE = 'Asia/Shanghai'#改为上海的时间则数据库没有时差
+TIME_ZONE = 'Asia/Shanghai'  # 改为上海的时间则数据库没有时差
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False#TIME_ZONE的参数为默认值时为True
+USE_TZ = False  # TIME_ZONE的参数为默认值时为True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -158,6 +162,20 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
 
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',  # 解决打开接口文档地址时候报错get_link
+
+    # 认证与权限
+    'DEFAULT_AUTHENTICATION_CLASSES': [  # 默认的认证类
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # 指定使用jwt_token认证方式
+        'rest_framework.authentication.SessionAuthentication',  # 会话认证
+        'rest_framework.authentication.BasicAuthentication'  # 基本认证（用户名和密码认证）
+    ],
+
+    # 登录权限设置，账户级别实在auth_user内的is_staff设置
+    # 'DEFAULT_PERMISSION_CLASSES': [  # 默认的权限类
+        # 'rest_framework.permissions.AllowAny',  # AllowAny不需要登录就有任意权限
+        # 'rest_framework.permissions.IsAuthenticated',  # IsAuthenticated只要登录就有任意权限
+        # 'rest_framework.permissions.IsAdminUser',  # IsAdminUser只有管理员账号登录就有任意权限
+    # ],
 }
 
 # 可以在全局配置settings中的logging，来配制日志信息
@@ -200,5 +218,26 @@ LOGGING = {
             'level': 'DEBUG',  # 日志器接受的最低日志级别
         },
     }
+
+
 }
 
+
+# AUTH_USER_MODEL = 'auth.User'  # 默认使用的是django auth子应用下的user模型类，可以指定自定义的模型类
+# User模型类中有很多字段没其中有一个is_staff字段，指定是否为超级管理员，如果为0是普通用户，如果为1是管理员
+
+
+JWT_AUTH = {
+
+    # 指定处理登录接口响应数据的函数
+    'JWT_RESPONSE_PAYLOAD_HANDLER':
+        'utils.jwt_handle.jwt_response_payload_handler',  # 重写了rest_framework内的jwt_response_payload_handler方法
+
+    # 前端用户访问一些需要认证之后的接口，那么默认需要在请求头中携带参数
+    # 请求key为Authorization，值为前缀+空格+token，如JWT +akjsdafkjkjlajjlkjsadkfjalksjdflkajfl
+
+    # 阔以指定token过期时间，默认为5分钟
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # token的有效时间为一天之后失效
+
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',  # JWT前缀重命名，不加则默认为JWT。指定前端传递token值的前缀
+}

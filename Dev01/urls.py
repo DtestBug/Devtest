@@ -23,5 +23,9 @@ urlpatterns = [
     path('', include('interface.urls')),
 
     # 添加接口文档平台的路由条目
-    path('docs/', include_docs_urls(title='测试平台接口文档', description='Test项目API调试'))
+    path('docs/', include_docs_urls(title='测试平台接口文档', description='Test项目API调试')),
+
+    #
+    path('api/', include('rest_framework.urls')),
+    path('user/', include('user.urls'))
 ]
