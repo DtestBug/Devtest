@@ -210,8 +210,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     def names(self, request):
         serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
         data = serializer_obj.data
-
         logger.debug(data)  # 定义日志器用于记录日志，logging.getLogging('全局配置settings.py中定义的日志器名')
+
         # 进行过滤和分页功能
         # serializer_obj = MyPagination
         return Response(data)
