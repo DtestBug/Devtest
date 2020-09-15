@@ -14,6 +14,7 @@ import os
 import sys
 import datetime
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(BASE_DIR, 'apps'))  # 阔以导入使用，将某路径添加到系统搜索路径中
@@ -29,7 +30,7 @@ DEBUG = True
 
 # 可以使用哪些ip或者域名来访问系统
 # 默认为空，可以使用127.0.0.1或者localhost
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # 二、Django设置DEBUG为False时，'django.contrib.staticfiles'会关闭，即Django不会自动搜索静态文件。
 # 静态文件不能加载导致的问题有两个：
@@ -40,6 +41,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,12 +61,21 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 需要添加在CommonMiddleware中间件之前
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = [
+#     "http://127.0.0.1:8080",
+#     "http://localhost:8080",
+# ]
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'Dev01.urls'
 
@@ -93,11 +104,11 @@ WSGI_APPLICATION = 'Dev01.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql',  # 选择阔以使用的数据库
         'NAME': 'dev02',  # 指定数据库的名称
         'HOST': '127.0.0.1',  # 域名和IP
         'PORT': '3306',  # 端口号，默认3306
-        'USER': 'root',
+        'USER': 'root',  # 用户
         'PASSWORD': '123456'  # 密码
     }
 }
@@ -126,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'  # zh-Hans中文/en-us英文
+LANGUAGE_CODE = 'zh-Hans'  # zh-Hans中文/en-us英文
 
 TIME_ZONE = 'Asia/Shanghai'  # 改为上海的时间则数据库没有时差
 
@@ -143,7 +154,7 @@ USE_TZ = False  # TIME_ZONE的参数为默认值时为True
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
-    'NON_FIELD_ERRORS_KEY':'errors',
+    'NON_FIELD_ERRORS_KEY': 'errors',
 
     # 可以修改默认的渲染类（处理返回的数据形式）
     # 列表中的元素有优先级，第一个元素的优先级最高

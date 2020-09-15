@@ -1,18 +1,18 @@
 from django.db import models
 
+
 class Project_Mo(models.Model):
     # 只要某一个字段中primary_key = True,那么Django就不会自动创建id字段，会使用自定义的
-
-    id = models.AutoField(primary_key=True)#primary=True，True的状态为唯一主键
+    id = models.AutoField(primary_key=True)  # primary=True，True的状态为唯一主键
     # 9.verbose_name:为个性化信息
     # 10.help_text帮助文本信息，在api接口文档平台和amdin后端站点中会用于提示，往往跟verbose_name一致
     # 11.unique用于指定唯一键，默认为False
     # 12.charField至少要指定一个max_length必传参数，代表此字段的最大长度，不能为负数
-    name = models.CharField(max_length=200, verbose_name='项目名称', help_text='项目名称', unique=True)#unique=True等于唯一的，max_length长度必须指定
+    name = models.CharField(max_length=200, verbose_name='项目名称', help_text='项目名称', unique=True)  # unique=True等于唯一的，max_length长度必须指定
     leader = models.CharField(max_length=50, verbose_name='项目负责人', help_text='项目负责人')
     tester = models.CharField(max_length=50, verbose_name='测试人员', help_text='测试人员')
     programmer = models.CharField(max_length=50, verbose_name='开发人员', help_text='开发人员')
-    #TextField没有长度限制
+    # TextField没有长度限制
     desc = models.TextField(verbose_name='项目简介', help_text='项目简介',blank=True, default='XXX简介',null=True)
     # 13.null指定数据在保存时是否可以为空，默认不能为空秒如果null=True,那么可以为空值。
     # 14.blank指定前端用户在创建数据时，是否需要传递，默认需要传递，需要blank设置为True
@@ -30,5 +30,6 @@ class Project_Mo(models.Model):
         # 21.指定表的个性化描述
         db_table = 'Test_D_project'
         verbose_name = '项目表'
+
     def __str__(self):
         return f'<{self.name}>'
