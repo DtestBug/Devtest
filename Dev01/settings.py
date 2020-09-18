@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
 
@@ -64,7 +65,7 @@ MIDDLEWARE = [
     # 需要添加在CommonMiddleware中间件之前
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -178,6 +179,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [  # 默认的认证类
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # 指定使用jwt_token认证方式
         'rest_framework.authentication.SessionAuthentication',  # 会话认证
+        'rest_framework.authentication.TokenAuthentication',  # token
         'rest_framework.authentication.BasicAuthentication'  # 基本认证（用户名和密码认证）
     ],
 
@@ -250,5 +252,5 @@ JWT_AUTH = {
     # 阔以指定token过期时间，默认为5分钟
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # token的有效时间为一天之后失效
 
-    'JWT_AUTH_HEADER_PREFIX': 'Bearer',  # JWT前缀重命名，不加则默认为JWT。指定前端传递token值的前缀
+    # 'JWT_AUTH_HEADER_PREFIX': 'Bearer',  # JWT前缀重命名，不加则默认为JWT。指定前端传递token值的前缀
 }

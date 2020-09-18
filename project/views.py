@@ -19,6 +19,8 @@ from utils.pagination import MyPagination
 import logging
 from rest_framework import permissions  # 认证
 
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 logger = logging.getLogger("test")  # 日志器为settings.py中定义的日志器名
 
 # POST与PUT上传数据时候需要注意项：
@@ -98,7 +100,6 @@ class Projects(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
         # res.save() # 使用序列化器对象.save()可以自动调用序列化器类中的create方法
         # return Response(res.data, status=status.HTTP_201_CREATED)
 
-
 class Project(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericAPIView):
     # b.往往要指定queryset，当前接口中需要使用到的查询集（查询集对象）
     # c. 往往要指定serializer_class,当前接口中需要使用到的序列化器类
@@ -173,6 +174,7 @@ class Project(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.Destroy
 #                       viewsets.GenericViewSet):  #支持对列表数据进行过滤，排序，分页操作
 
 # viewsets.ModelViewSet支持以上所有功能（查，建，改，删）
+
 class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过滤，排序，分页操作
 
     # 以下内容均为接口文档内的操作描述
@@ -203,13 +205,18 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
     pagination_class = MyPagination  # 在视图中指定分页
     # authentication_classes = ['']  # authentication_classes在视图中指定权限，可以在列表中添加多个权限类
-    permission_classes = [permissions.IsAuthenticated]  # 视图中指定的权限优先级大于全局指定的权限
+    permission_classes = [permissions.IsAdminUser]  # 视图中指定的权限优先级大于全局指定的权限
+
+    # 标记需要进行jwt验证
+    authentication_classes = (JSONWebTokenAuthentication,)
 
     # 可以试用action装饰器去自定义动作方法
     # methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']
     # detail参数为必传参数，指定是否为详情数据（如果需要传递主键ID，那么detail=True,否则为False）
     # 添加url_path指定url路径，不添加则默认为action名称(当前为names)
     # url_name指定url的名称，默认为action名称(当前names)
+
+
     @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据# url_path='nnn'
     def names(self, request):
         serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
@@ -220,11 +227,13 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
         # serializer_obj = MyPagination
         return Response(data)
 
+
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer_obj = self.get_serializer(instance=instance)
         return Response(serializer_obj.data)
+
 
     def get_serializer_class(self):
         if self.action == 'names':
