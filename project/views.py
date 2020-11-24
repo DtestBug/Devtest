@@ -5,7 +5,7 @@ from .models import Project_Mo
 from interface.models import Interface_Mo
 from django.db.models import Count
 from .serializers import ProjectSerializer, ProjectModelSerializer, ProjectsNamesModelSerializer, \
-    InterFacesByProjectIdModelSerializer, InterfacesNamesModelSerializer
+    InterFacesByProjectIdModelSerializer, InterfacesNamesModelSerializer, InterFacesByProjectIdModelSerializer1
 import json
 # =========================
 from rest_framework.views import APIView
@@ -274,8 +274,6 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
 
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
-        # instance = self.get_object()
-        # serializer_obj = self.get_serializer(instance=instance)
         return self.retrieve(request, *args, **kwargs)
 
     def get_serializer_class(self):
@@ -283,7 +281,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
             return ProjectsNamesModelSerializer
 
         elif self.action == 'interfaces':
-            return InterFacesByProjectIdModelSerializer
-
+            # return InterFacesByProjectIdModelSerializer
+            return InterFacesByProjectIdModelSerializer1
         else:
             return self.serializer_class
