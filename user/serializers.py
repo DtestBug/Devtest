@@ -69,11 +69,6 @@ class RegisterSerializer(serializers.ModelSerializer):  # 类名自定义
         user.token = token
         return user
 
-        # return {
-        #     'token': jwt_encode_handler(payload),
-        #     'user': user
-        # }
-
 
 
 

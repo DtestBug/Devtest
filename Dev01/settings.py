@@ -57,6 +57,13 @@ INSTALLED_APPS = [
     'project',
     'interface',
     'user',
+    'configures',
+
+    'debugtalks',
+    'testcases',
+    'testsuits',
+    'utils',
+    'reports',
 ]
 
 MIDDLEWARE = [

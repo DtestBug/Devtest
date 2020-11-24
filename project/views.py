@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse, HttpResponse, Http404
 from .models import Project_Mo
+from interface.models import Interface_Mo
+from django.db.models import Count
 from .serializers import ProjectSerializer, ProjectModelSerializer, ProjectsNamesModelSerializer, \
     InterFacesByProjectIdModelSerializer, InterfacesNamesModelSerializer
 import json
@@ -17,9 +19,11 @@ from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from utils.pagination import MyPagination
+from django.db.models import Count
 import logging
 from rest_framework import permissions  # 认证
-
+from configures.models import Configures
+from testsuits.models import Testsuits
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 logger = logging.getLogger("test")  # 日志器为settings.py中定义的日志器名
@@ -210,12 +214,48 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     # ordering_fields = ['id', 'name']  # 排序引擎   示例：http://127.0.0.1:8000/index/projects/?ordering=id，id前面加-可以倒序
     pagination_class = MyPagination  # 在视图中指定分页
     # authentication_classes = ['']  # authentication_classes在视图中指定权限，可以在列表中添加多个权限类
-    permission_classes = [permissions.IsAdminUser]  # 视图中指定的权限优先级大于全局指定的权限
+    # permission_classes = [permissions.IsAdminUser]  # 视图中指定的权限优先级大于全局指定的权限
+
 
     # 标记需要进行jwt验证
     authentication_classes = (JSONWebTokenAuthentication,)
     def list(self, request, *args, **kwargs):
-        pass
+        response = super().list(self, request, *args, **kwargs)
+        results = response.data['results']
+        for item in results:
+            # item 为一条项目数据所在的字典
+            # 需要获取当前项目所属的接口总数用例总数，配置总数，套件总数
+            project_id = item.get('id')
+            # 1.使用.annotate()方法，那么会自动使用当前模型类的主键，作为分组条件
+            # 2.使用.annotate()方法里可以添加聚合函数，计算的名称为从表名小写（还需要在外键字段上设置，related_name）
+            # 3.values可以指定需要查询的字段（默认为所用字段）
+            # 4.可以给聚合函数指定别名，默认为tesstcases_count
+            # 5.如果values放在annotate前面，那么聚合运算的字段不需要再values中添加，放在后面需要
+            interfaces_obj = Interface_Mo.objects.annotate(testcases1=Count('testcases')).values('id', 'testcases1').filter(project_id=project_id)
+            interfaces_testcases_qs = Interface_Mo.objects.values('id').annotate(testcases=Count('testcases')).filter(project_id=project_id)
+            interfaces_count = interfaces_testcases_qs.count()
+            # 定义初始用例总数为0
+            testcases_count = 0
+            for one_dict in interfaces_testcases_qs:
+                testcases_count += one_dict.get('testcases')
+
+            # 获取项目下的配置总数
+            interfaces_configure_qs = Interface_Mo.objects.values('id').annotate(
+                configures=Count('configures')).filter(project_id=project_id)
+
+            # 定义初始用例总数为0
+            configures_count = 0
+            for one_dict in interfaces_configure_qs:
+                configures_count += one_dict.get('configures')
+
+            # 获取项目下的套件总数
+            testsuits_count = Testsuits.objects.filter(project_id=project_id).count()
+            item['interfaces'] = interfaces_count
+            item['testcases'] = testcases_count
+            item['testsuits'] = testsuits_count
+        response.data['results'] = item
+        return response
+
 
     # 可以试用action装饰器去自定义动作方法
     # methods参数默认为['get']，可以定义支持请求方式['get', 'post', 'put']

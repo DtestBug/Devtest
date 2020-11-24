@@ -58,7 +58,7 @@ class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
     # email = serializers.EmailField(write_only=True)
 
     #这行代码在上传数据的时候可以关联父表id，如果注释后是无法上传和更新数据的。同时父表查询返回的是原有name信息
-    projects = serializers.PrimaryKeyRelatedField(help_text='所属项目', label='所属项目', queryset=Project_Mo.objects.all(),error_messages={"required":'该字段为必填项'})
+    # projects = serializers.PrimaryKeyRelatedField(help_text='所属项目', label='所属项目', queryset=Project_Mo.objects.all(),error_messages={"required":'该字段为必填项'})
 
     # ============单字段显示=============
     # 返回父表项目id对应的值///projects命名是固定的，少了s之后无法显示

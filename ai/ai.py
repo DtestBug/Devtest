@@ -1,26 +1,14 @@
 import requests
 from pyquery import PyQuery
-import os
-url = 'http://www.win4000.com/mt/star.html'
+
+
+url = 'http://www.netbian.com/s/wangzherongyao/'
+
 data = requests.get(url)
 
-print(data.text)
+data.encoding = 'utf-8'
 
+datas = PyQuery(data.text)
 
-
-
-
-
-#             filename ='E:\python????\???%s\\????????%s'%(cont2,cont1) + '.jpg' #????
-#             with open(filename, 'w') as file:#????
-#                 urllib.request.urlretrieve(V, filename)#????i???????filename????+1
-#         print("??????:?%s??" % cont2)
-# print('?????%s ?'% cont1)#????????
-
-
-
-
-
-
-
+print(datas)
 
