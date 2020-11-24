@@ -269,20 +269,14 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     # url_name指定url的名称，默认为action名称(当前names)
 
     @action(methods=['get'], detail=False)  # methods请求方式。  detail=True是详情数据，=False的时候是列表类型的数据# url_path='nnn'
-    def names(self, request):
-        serializer_obj = self.get_serializer(instance=self.get_queryset(), many=True)
-        data = serializer_obj.data
-
-        logger.debug(data)  # 定义日志器用于记录日志，logging.getLogging('全局配置settings.py中定义的日志器名')
-        # 进行过滤和分页功能
-        # serializer_obj = MyPagination
-        return Response(data)
+    def names(self, request, *args, **kwargs):
+        return self.list(self, request, *args, **kwargs)
 
     @action(detail=True)
     def interfaces(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer_obj = self.get_serializer(instance=instance)
-        return Response(serializer_obj.data)
+        # instance = self.get_object()
+        # serializer_obj = self.get_serializer(instance=instance)
+        return self.retrieve(request, *args, **kwargs)
 
     def get_serializer_class(self):
         if self.action == 'names':

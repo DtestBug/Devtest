@@ -154,8 +154,8 @@ class InterfacesNamesModelSerializer(serializers.ModelSerializer):
 
 
 class InterFacesByProjectIdModelSerializer(serializers.ModelSerializer):
-    interfaces = InterfacesNamesModelSerializer(many=True, read_only=True)
+    # interfaces = InterfacesNamesModelSerializer(many=True, read_only=True)
 
     class Meta:
         model = Interface_Mo
-        fields = ('interfaces',)
+        fields = ('id', 'name')
