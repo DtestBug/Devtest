@@ -222,6 +222,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
     def list(self, request, *args, **kwargs):
         response = super().list(self, request, *args, **kwargs)
         results = response.data['results']
+        data_list = []
         for item in results:
             # item 为一条项目数据所在的字典
             # 需要获取当前项目所属的接口总数用例总数，配置总数，套件总数
@@ -253,7 +254,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
             item['interfaces'] = interfaces_count
             item['testcases'] = testcases_count
             item['testsuits'] = testsuits_count
-        response.data['results'] = item
+            data_list.append(item)
+        response.data['results'] = data_list
         return response
 
 
