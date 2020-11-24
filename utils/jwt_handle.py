@@ -4,3 +4,4 @@ def jwt_response_payload_handler(token, user=None, request=None):
         'user_name': user.username,  # 数据库内的name
         'token': token  # jwt加密方法生成的token
     }
+

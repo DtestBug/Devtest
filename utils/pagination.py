@@ -1,5 +1,6 @@
 from rest_framework.pagination import PageNumberPagination
 
+
 # 重写父类:PageNumberPagination
 class MyPagination(PageNumberPagination):
     page_size = 5  # 每页数字数量
