@@ -234,8 +234,11 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
             # 5.如果values放在annotate前面，那么聚合运算的字段不需要再values中添加，放在后面需要
             interfaces_obj = Interface_Mo.objects.annotate(testcases1=Count('testcases')).values('id', 'testcases1').filter(project_id=project_id)
             interfaces_testcases_qs = Interface_Mo.objects.values('id').annotate(testcases=Count('testcases')).filter(project_id=project_id)
+
+            # interfaces总数
             interfaces_count = interfaces_testcases_qs.count()
-            # 定义初始用例总数为0
+
+            # 用例总数
             testcases_count = 0
             for one_dict in interfaces_testcases_qs:
                 testcases_count += one_dict.get('testcases')
@@ -243,17 +246,17 @@ class ProjectsViewSet(viewsets.ModelViewSet):  # 支持对列表数据进行过�
             # 获取项目下的配置总数
             interfaces_configure_qs = Interface_Mo.objects.values('id').annotate(
                 configures=Count('configures')).filter(project_id=project_id)
-
-            # 定义初始用例总数为0
             configures_count = 0
             for one_dict in interfaces_configure_qs:
                 configures_count += one_dict.get('configures')
 
             # 获取项目下的套件总数
             testsuits_count = Testsuits.objects.filter(project_id=project_id).count()
+
             item['interfaces'] = interfaces_count
             item['testcases'] = testcases_count
             item['testsuits'] = testsuits_count
+            item['configures'] = configures_count
             data_list.append(item)
         response.data['results'] = data_list
         return response
