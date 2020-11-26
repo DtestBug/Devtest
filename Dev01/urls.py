@@ -27,5 +27,11 @@ urlpatterns = [
 
     #
     path('api/', include('rest_framework.urls')),
-    path('user/', include('user.urls'))
+    path('user/', include('user.urls')),
+    path('', include('envs.urls')),
+    path('', include('testsuits.urls')),
+    path('', include('configures.urls')),
+    path('', include('debugtalks.urls')),
+    path('', include('reports.urls')),
+    path('', include('testcases.urls')),
 ]

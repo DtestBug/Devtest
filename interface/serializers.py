@@ -54,7 +54,7 @@ from project.models import Project_Mo
 #         instance.save()
 #         return instance
 
-class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
+# class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
     # email = serializers.EmailField(write_only=True)
 
     #这行代码在上传数据的时候可以关联父表id，如果注释后是无法上传和更新数据的。同时父表查询返回的是原有name信息
@@ -70,9 +70,9 @@ class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
     # 数据按照project项目内的序列化器定义为字段规则来的
     # project = ProjectModelSerializer(label='所属项目信息', help_text='所属项目信息', read_only=True)
 
-    class Meta:
-        model = Interface_Mo
-        fields = '__all__'
+    # class Meta:
+    #     model = Interface_Mo
+    #     fields = '__all__'
 
     # def create(self, validated_data):
         # email = validated_data.pop('email')
@@ -83,7 +83,16 @@ class InterfaceModelSerializer(serializers.ModelSerializer):#类名自定义
     #     return super().create(validated_data)
 
 
+class InterfaceModelSerializer(serializers.ModelSerializer):  # 类名自定义
+    project = serializers.StringRelatedField()
+    project_id = serializers.PrimaryKeyRelatedField(write_only=True, queryset=Project_Mo.objects.all())
 
+    class Meta:
+        model = Interface_Mo
+        fields = '__all__'
+
+    def create(self, validated_data):
+        pass
 
 
 
