@@ -1,4 +1,7 @@
 import locale
+"""
+时间格式化
+"""
 
 
 def datetime_fmt():

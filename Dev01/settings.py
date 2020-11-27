@@ -262,3 +262,7 @@ JWT_AUTH = {
 
     # 'JWT_AUTH_HEADER_PREFIX': 'Bearer',  # JWT前缀重命名，不加则默认为JWT。指定前端传递token值的前缀
 }
+
+# 在全局配置文件settings.py文件中定义变量，变量名要大写
+# 在reports.views下调用的时候需要导入django.conf.settings
+REPORT_DIR = os.path.join(BASE_DIR, 'reports')
